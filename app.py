@@ -67,10 +67,10 @@ if df_trips is not None:
     st.sidebar.image("logo/logo_FDCO.png", use_container_width=True)
     
     # --- BARRE LATÉRALE (FILTRES & EXPORT) ---
-    st.sidebar.title("🎛️ Tableau de Bord", help="Menu principal pour contrôler l'affichage du tableau de bord.")
+    st.sidebar.title("🎛️ Tableau de bord", help="Menu principal pour contrôler l'affichage du tableau de bord.")
     
     # Filtres
-    st.sidebar.subheader("📍 Filtres Lignes", help="Section pour filtrer les données par ligne de transport.")
+    st.sidebar.subheader("📍 Filtres lignes", help="Section pour filtrer les données par ligne de transport.")
     all_routes = df_trips['Route Description'].unique().tolist() if 'Route Description' in df_trips.columns else ["Toutes"]
     selected_routes = st.sidebar.multiselect("Choisir les Lignes", all_routes, default=all_routes[:min(3, len(all_routes))], help="Sélectionnez une ou plusieurs lignes pour analyser leurs performances spécifiques.")
     
@@ -80,14 +80,14 @@ if df_trips is not None:
 
     # Export Report
     st.sidebar.markdown("---")
-    st.sidebar.subheader("📥 Exportation Décideur", help="Outils d'exportation de données pour rapports et réunions.")
+    st.sidebar.subheader("📥 Exportation décideur", help="Outils d'exportation de données pour rapports et réunions.")
     st.sidebar.caption("Téléchargez les statistiques de la sélection pour les réunions.")
     @st.cache_data
     def convert_df(df):
         return df.to_csv(index=False).encode('utf-8')
     csv_data = convert_df(trips_filtered)
     st.sidebar.download_button(
-        label="📊 Télécharger Rapport (CSV)",
+        label="📊 Télécharger rapport (CSV)",
         data=csv_data,
         file_name='rapport_kinshasa_mobilite.csv',
         mime='text/csv',
@@ -95,11 +95,11 @@ if df_trips is not None:
     )
 
     # --- EN-TÊTE PRINCIPAL ---
-    st.title("🚇 UK support to high-impact infrastructure and urban projects in DRC - Phase 2", help="Tableau de bord de suivi de la performance et de l'intermodalité des transports à Kinshasa.")
-    st.markdown("Interface stratégique pour décideurs : Suivi de la performance et de l'intermodalité.")
+    st.title("🚇 UK Support to High-impact Infrastructure & Urban Projects in DRC - Phase 2", help="Tableau de bord de suivi de la performance et de l'intermodalité des transports à Kinshasa.")
+    st.markdown("Interface stratégique pour décideurs : suivi de la performance et de l'intermodalité.")
 
     # --- TABS (ONGLETS) ---
-    tab1, tab2, tab3 = st.tabs(["🗺️ Carte Stratégique", "📊 Performances & Revenus", "🕒 Analyse Temporelle & Détails"])
+    tab1, tab2, tab3 = st.tabs(["🗺️ Carte stratégique", "📊 Performances & revenus", "🕒 Analyse temporelle & détails"])
 
     # --- ONGLET 1 : CARTE INTERACTIVE (FOLIUM) ---
     with tab1:
@@ -153,7 +153,7 @@ if df_trips is not None:
     # --- ONGLET 2 : ANALYSE RÉSEAU (MACRO & REVENUS) ---
     with tab2:
         # KPI Optimisation des Revenus
-        st.markdown("### 💰 Indicateurs Financiers et Opérationnels")
+        st.markdown("### 💰 Indicateurs financiers et opérationnels")
         
         total_revenue = trips_filtered['Revenue'].sum() if 'Revenue' in trips_filtered.columns else 0
         total_pax = trips_filtered['Total Passengers'].sum() if 'Total Passengers' in trips_filtered.columns else 0
@@ -172,7 +172,7 @@ if df_trips is not None:
         col1, col2 = st.columns(2)
         
         with col1:
-            st.subheader("Performance Financière par Ligne", help="Ce graphique (Bar Chart) compare les revenus réels cumulés par chaque ligne. La couleur indique le volume de passagers transportés.")
+            st.subheader("Performance financière par ligne", help="Ce graphique (Bar Chart) compare les revenus réels cumulés par chaque ligne. La couleur indique le volume de passagers transportés.")
             if 'Route Description' in trips_filtered.columns and not trips_filtered.empty:
                 perf_by_route = trips_filtered.groupby('Route Description')[['Revenue', 'Total Passengers']].sum().reset_index()
                 fig_perf = px.bar(perf_by_route, x='Route Description', y='Revenue', 
@@ -184,7 +184,7 @@ if df_trips is not None:
                 st.plotly_chart(fig_perf, use_container_width=True)
             
         with col2:
-            st.subheader("Profil Démographique", help="Ce graphique (Pie Chart) illustre la répartition homme/femme des passagers selon l'échantillon ou les données générées.")
+            st.subheader("Profil démographique", help="Ce graphique (Pie Chart) illustre la répartition homme/femme des passagers selon l'échantillon ou les données générées.")
             if not df_pax.empty and 'Gender' in df_pax.columns:
                 gender_counts = df_pax['Gender'].value_counts().reset_index()
                 gender_counts.columns = ['Genre', 'Nombre']
@@ -199,7 +199,7 @@ if df_trips is not None:
 
     # --- ONGLET 3 : ANALYSE TEMPORELLE & DÉTAIL ---
     with tab3:
-        st.subheader("🕒 Analyse Temporelle (Affluence par tranche horaire)", help="Ce graphique agrège l'activité totale de passagers (montées et descentes concentrées) réparties par grandes périodes horaires.")
+        st.subheader("🕒 Analyse temporelle (affluence par tranche horaire)", help="Ce graphique agrège l'activité totale de passagers (montées et descentes concentrées) réparties par grandes périodes horaires.")
         
         stops_analysis = df_stops[df_stops['Trip ID'].isin(trip_ids_filtered)].copy()
         if 'Arrival Time' in stops_analysis.columns:
@@ -234,7 +234,7 @@ if df_trips is not None:
             st.info("La colonne 'Arrival Time' est manquante pour l'analyse temporelle.")
 
         st.markdown("---")
-        st.subheader("🔬 Zoom Micro : Profil de Charge", help="Cette section permet d'analyser en détail l'évolution du remplissage du bus pour un trajet (Trip ID) spécifique.")
+        st.subheader("🔬 Zoom micro : profil de charge", help="Cette section permet d'analyser en détail l'évolution du remplissage du bus pour un trajet (Trip ID) spécifique.")
         
         if len(trip_ids_filtered) > 0:
             selected_trip_id = st.selectbox("Sélectionner un Trajet pour Analyse Détaillée (ID)", trip_ids_filtered, help="Choisissez l'identifiant d'un trajet précis pour retracer l'occupation séquence par séquence.")
@@ -255,13 +255,13 @@ if df_trips is not None:
                 st.plotly_chart(fig_load, use_container_width=True)
 
     # --- NOUVEL ONGLET : ANALYSE APPROFONDIE ---
-    with st.expander("📈 Analyse Approfondie (Beta)", expanded=False):
-        st.markdown("## 🧠 Insights Mobilité")
+    with st.expander("📈 Analyse approfondie (Beta)", expanded=False):
+        st.markdown("## 🧠 Insights mobilité")
         
-        tab_deep1, tab_deep2, tab_deep3 = st.tabs(["🚀 Vitesse Commerciale", "⏱️ Temps d'Arrêt", "👥 Densité de Passagers"])
+        tab_deep1, tab_deep2, tab_deep3 = st.tabs(["🚀 Vitesse commerciale", "⏱️ Temps d'arrêt", "👥 Densité de passagers"])
         
         with tab_deep1:
-            st.subheader("Vitesse Commerciale par Ligne", help="Graphique en barres affichant la vitesse commerciale moyenne estimée pour chaque ligne (Distance totale du trajet divisée par le temps total estimé).")
+            st.subheader("Vitesse commerciale par Ligne", help="Graphique en barres affichant la vitesse commerciale moyenne estimée pour chaque ligne (Distance totale du trajet divisée par le temps total estimé).")
             route_speeds = []
             for route in selected_routes:
                 route_trips = trips_filtered[trips_filtered['Route Description'] == route]
@@ -294,7 +294,7 @@ if df_trips is not None:
                 st.warning("Données temporelles insuffisantes pour calculer la vitesse.")
 
         with tab_deep2:
-            st.subheader("Temps d'Arrêt (Dwell Time)", help="Affiche le temps d'attente moyen en secondes passé à l'arrêt par véhicule sur la ligne choisie.")
+            st.subheader("Temps d'arrêt (dwell time)", help="Affiche le temps d'attente moyen en secondes passé à l'arrêt par véhicule sur la ligne choisie.")
             if 'Dwell Time' in stops_analysis.columns:
                 def parse_dwell(t_str):
                     try:
@@ -312,7 +312,7 @@ if df_trips is not None:
                 st.info("La colonne 'Dwell Time' est manquante.")
 
         with tab_deep3:
-            st.subheader("Densité de Passagers", help="Heatmap illustrant l'occupation moyenne par séquence d'arrêt. Les zones claires/jaunâtres indiquent une forte affluence de passagers à ce moment du trajet.")
+            st.subheader("Densité de passagers", help="Heatmap illustrant l'occupation moyenne par séquence d'arrêt. Les zones claires/jaunâtres indiquent une forte affluence de passagers à ce moment du trajet.")
             if 'Occupancy' in stops_analysis.columns and 'Sequence' in stops_analysis.columns:
                 occupancy_heatmap = stops_analysis.groupby(['Route', 'Sequence'])['Occupancy'].mean().reset_index()
                 fig_heat = px.density_heatmap(occupancy_heatmap, x='Sequence', y='Route', z='Occupancy',
